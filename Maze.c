@@ -61,6 +61,7 @@ struct Cell ValidateMaze(char* filename) { //this will be the first subroutine t
     mazedimensions.column = countCol;
     mazedimensions.row = countRow;
     fclose(file);
+    printf("check");
     return mazedimensions; 
 }
 
