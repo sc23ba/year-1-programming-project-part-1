@@ -9,20 +9,32 @@ struct Cell {
     char type;
 };
 
-int ValidateMaze(char* filename) { //this will be the first subroutine that will be run, 
+struct Cell ValidateMaze(char* filename) { //this will be the first subroutine that will be run, 
     char line_buffer[50];         //it will take the user's input and validate if the input is valid before doing anything else 
-    int count = 0;
+    int countRow = -1;
+    int countCol = 0;
     int startCheck = 0;
     int endCheck = 0; 
+    struct Cell mazedimensions;
+    mazedimensions.column = 1;
+    mazedimensions.row = 1;
+    mazedimensions.type = ' ';
+
     FILE* file = fopen(filename, "r");
 
     if (file == NULL) {
         perror("Invalid file name, please try again\n");
-        return 1;
+        return mazedimensions;
     }
     else {
         while (fgets(line_buffer, line_buffer[50], file) != NULL) {
-            count++;
+            countCol++;
+            if (countRow != -1) {
+                countRow = strlen(line_buffer);
+            }
+            else if (countRow != strlen(line_buffer)){
+                return mazedimensions;
+            }
         }
     }
     rewind(file);
@@ -41,25 +53,24 @@ int ValidateMaze(char* filename) { //this will be the first subroutine that will
                 startCheck = 1;
             }
             else{
-                return 1;
+                return mazedimensions;
             }
 
         }
-        if (count != strlen(line_buffer)) {
-            return 1;
-        }
     }
+    mazedimensions.column = countCol;
+    mazedimensions.row = countRow;
     fclose(file);
-    return count; 
+    return mazedimensions; 
 }
 
-char** LoadMaze(const int count, char* filename) { //is the user's input is valid and the maze itself is valid it will
+char** LoadMaze(cstruct Cell dimensions , char* filename) { //is the user's input is valid and the maze itself is valid it will
     char line_buffer[50];                          //then save the 
-    char** maze = (char**)malloc(count * sizeof(char*));
+    char** maze = (char**)malloc(dimensions.row * sizeof(char*));
     int j = 0;
 
-    for (int i = 0; i < count; i++) {
-        maze[i] = (char*)malloc(count * sizeof(char));
+    for (int i = 0; i < dimensions.column; i++) {
+        maze[i] = (char*)malloc(dimensions.column * sizeof(char));
     }
     FILE* file = fopen(filename, "r");
 
@@ -79,9 +90,9 @@ char** LoadMaze(const int count, char* filename) { //is the user's input is vali
 }
 
 
-struct Cell LoadStartPosition(char** maze, int count) {
-    for (int i = 0; i < count; i++) {
-        for (int j = 0; j < count; j++) {
+struct Cell LoadStartPosition(char** maze, struct Cell dimensions) {
+    for (int i = 0; i < dimensions.row; i++) {
+        for (int j = 0; j < dimensions.column; j++) {
             if (maze[i][j] = 'S') {
                 struct Cell currentLocation;
                 currentLocation.row = i;
@@ -122,7 +133,7 @@ int GetInput() {
 }
 
 
-struct Cell Move(struct Cell currentLocation, char** maze, int count, int option) {
+struct Cell Move(struct Cell currentLocation, char** maze, struct Cell dimensions, int option) {
     if (option == 1) {
         if (currentLocation.row - 1 == -1) {
             printf("Invalid movement, please try again.\n");
@@ -150,7 +161,7 @@ struct Cell Move(struct Cell currentLocation, char** maze, int count, int option
         return currentLocation;
     }
     else if (option == 3) {
-        if (currentLocation.row + 1 == count) {
+        if (currentLocation.row + 1 == dimensions.row) {
             printf("Invalid movement, please try again.\n");
         }
         else if (maze[currentLocation.row + 1][currentLocation.column] = '#') {
@@ -163,7 +174,7 @@ struct Cell Move(struct Cell currentLocation, char** maze, int count, int option
         return currentLocation;
     }
     else if (option == 4) {
-        if (currentLocation.column + 1 == count) {
+        if (currentLocation.column + 1 == dimensions.column) {
             printf("Invalid movement, please try again.\n");
         }
         else if (maze[currentLocation.row][currentLocation.column + 1] = '#') {
@@ -188,9 +199,9 @@ int Wincheck(struct Cell currentPosition)
     }
 }
 
-void showMap(char** maze, struct Cell currentPosition, int count) {
-    for (int i = 0; i < count; i++) {
-        for (int j = 0; j < count; j++) {
+void showMap(char** maze, struct Cell currentPosition, struct Cell dimensions) {
+    for (int i = 0; i < dimensions.row; i++) {
+        for (int j = 0; j < dimensions.column; j++) {
             if (currentPosition.row == i && currentPosition.column == j) {
                 printf("X");
             }
@@ -208,16 +219,16 @@ void showMap(char** maze, struct Cell currentPosition, int count) {
 
 int main() {
     int wingame = 0;
-    int option;
-    int count = 1;
+    struct Cell dimensions;
+    dimensions.row = 1;
     char fileName[50];
-    while (count == 1){
+    while (dimensions.row == 1){
         printf("Please enter your Maze file name\n");
         scanf(" %s", fileName);
-        count = ValidateMaze(fileName);
+        dimensions = ValidateMaze(fileName);
     }
-    char** maze = LoadMaze(count, fileName);
-    struct Cell currentPosition = LoadStartPosition(maze, count);
+    char** maze = LoadMaze(dimensions, fileName);
+    struct Cell currentPosition = LoadStartPosition(maze, dimensions);
 
     //the loading phase has ended and the game will then begin
     while(wingame == 0){
@@ -231,7 +242,7 @@ int main() {
 
         }
         else if(option == 2){
-            showMap(maze,currentPosition,count);
+            showMap(maze,currentPosition,dimensions);
         }
         else{
             printf("Invalid input, please try again");
