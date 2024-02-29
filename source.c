@@ -180,7 +180,7 @@ struct Cell Move(struct Cell currentLocation, char** maze, int count, int option
 int Wincheck(struct Cell currentPosition)
 {
     if (currentPosition.type == 'E') {
-        printf("Well done, you won!\n")
+        printf("Well done, you won!\n");
         return 1; 
     }
     else{
@@ -216,8 +216,8 @@ int main() {
         scanf(" %s", fileName);
         count = ValidateMaze(fileName);
     }
-    char** maze = LoadMaze(fileName);
-    struct Cell currentPositon LoadStartPosition(maze, count);
+    char** maze = LoadMaze(count, fileName);
+    struct Cell currentPosition = LoadStartPosition(maze, count);
 
     //the loading phase has ended and the game will then begin
     while(wingame == 0){
@@ -225,7 +225,7 @@ int main() {
         printf("1. Move\n");
         printf("2. See Map\n");
         printf("(enter number option)\n");
-        scanf(" %d", option);
+        scanf(" %d", &option);
 
         if(option == 1){
 
