@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 //structures and subroutines
 struct Cell {
@@ -64,9 +65,9 @@ char** LoadMaze(const int count, char* filename) { //is the user's input is vali
 
     if (file == NULL) {
         perror("");
-        return 1;
+        return NULL;
     }
-    while (fgets(line_buffer, line_buffer[50], file) != NULL)
+    while (fgets(line_buffer, 50, file) != NULL)
     {
         for (int i = 0; i < strlen(line_buffer); i++) {
             maze[j][i] = line_buffer[i];
@@ -98,7 +99,7 @@ int GetInput() {
     while (errorCheck == 0){
         printf("\n");
         printf("Please enter your movement(W/A/S/D): ");
-        scanf_s(" %c", &option);
+        scanf(" %c", &option);
         printf("\n");
         if (option == 'A' || option == 'a') {
             return 1;
@@ -208,11 +209,11 @@ int main() {
     int wingame = 0;
     int option;
     int count = 1;
-    char* fileName;
+    char fileName[50];
     while (count == 1)
     {
         printf("Please enter your Maze file name\n");
-        scanf_s(" %s", &fileName);
+        scanf(" %s", fileName);
         count = ValidateMaze(fileName);
     }
 
