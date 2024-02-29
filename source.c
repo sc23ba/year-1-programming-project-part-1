@@ -64,7 +64,7 @@ struct Cell ValidateMaze(char* filename) { //this will be the first subroutine t
     return mazedimensions; 
 }
 
-char** LoadMaze(cstruct Cell dimensions , char* filename) { //is the user's input is valid and the maze itself is valid it will
+char** LoadMaze(struct Cell dimensions , char* filename) { //is the user's input is valid and the maze itself is valid it will
     char line_buffer[50];                          //then save the 
     char** maze = (char**)malloc(dimensions.row * sizeof(char*));
     int j = 0;
@@ -221,6 +221,7 @@ int main() {
     int wingame = 0;
     struct Cell dimensions;
     dimensions.row = 1;
+    int option;
     char fileName[50];
     while (dimensions.row == 1){
         printf("Please enter your Maze file name\n");
